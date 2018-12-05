@@ -8,7 +8,7 @@ An example django project that is already configured to use django, nginx, uwsgi
     Step 1:
         Enter your project repo 
 
-        https://github.com/cristi-boboc/django-nginx-uwsgi-celery-redis-rabbitmq-postgresql
+        https://github.com/pidginhost/django-nginx-uwsgi-postgresql-rabbitmq-celery-redis
     
     Step 2
         
