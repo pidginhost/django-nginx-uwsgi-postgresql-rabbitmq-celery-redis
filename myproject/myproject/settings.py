@@ -16,21 +16,21 @@ from django.core.exceptions import ImproperlyConfigured
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+try:
+    from application import local_settings
+except ImportError:
+    pass
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
-
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', None)
+SECRET_KEY = getattr(local_settings, 'DJANGO_SECRET_KEY', '')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = getattr(local_settings, 'DEBUG', True)
 
-ALLOWED_HOSTS = []
-if os.getenv('HOSTNAME'):
-    DEBUG = False
-    ALLOWED_HOSTS = [os.getenv('HOSTNAME')]
+ALLOWED_HOSTS = [getattr(local_settings, 'HOSTNAME', '*')]
 
 # Application definition
 
@@ -82,9 +82,9 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('POSTGRESQL_DB'),
-        'USER': os.getenv('POSTGRESQL_USERNAME'),
-        'PASSWORD': os.getenv('POSTGRESQL_PASSWORD'),
+        'NAME': getattr(local_settings, 'POSTGRESQL_DB'),
+        'USER': getattr(local_settings, 'POSTGRESQL_USERNAME'),
+        'PASSWORD': getattr(local_settings, 'POSTGRESQL_PASSWORD'),
         'HOST': 'localhost',
         'PORT': 5432,
     }
@@ -128,22 +128,20 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.getenv('DJANGO_STATIC',  os.path.join(BASE_DIR, 'static'))
+STATIC_ROOT = getattr(local_settings, 'DJANGO_STATIC', os.path.join(BASE_DIR, 'static'))
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.getenv('DJANGO_MEDIA',  os.path.join(BASE_DIR, 'media'))
+MEDIA_ROOT = getattr(local_settings, 'DJANGO_MEDIA', os.path.join(BASE_DIR, 'media'))
 
 
 CACHES = {
     'default': {
         'BACKEND': 'redis_cache.RedisCache',
         'LOCATION': [
-            '{}:{}'.format(os.getenv('REDIS_HOST', 'localhost'), os.getenv('REDIS_PORT', 6379))
+            '{}:{}'.format(getattr(local_settings, 'REDIS_HOST', 'localhost'), getattr(local_settings, 'REDIS_PORT', 6379))
         ],
-        'OPTIONS': {
-            "DB": os.getenv('REDIS_DATABASE', 0),
-        }
     },
 }
 
-BROKER_URL = 'amqp://{}:{}@{}:{}/{}'.format(os.getenv('RABBITMQ_USERNAME'), os.getenv('RABBITMQ_PASSWORD'), os.getenv('RABBITMQ_HOST', 'localhost'), os.getenv('RABBITMQ_PORT',5672), os.getenv('RABBITMQ_VHOST', 'celery'))
+BROKER_URL = 'amqp://{}:{}@{}:{}/{}'.format(getattr(local_settings, 'RABBITMQ_USERNAME'), getattr(local_settings, 'RABBITMQ_PASSWORD'), os.getenv(''), getattr(local_settings, 'RABBITMQ_HOST', 'localhost'), getattr(local_settings, 'RABBITMQ_PORT', 5672), getattr(local_settings, 'RABBITMQ_VHOST', 'celery'))
+
